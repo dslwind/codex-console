@@ -1,5 +1,6 @@
 services:
   webui:
+    container_name: codex-console
     build: .
     env_file:
       - .env

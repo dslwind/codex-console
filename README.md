@@ -133,6 +133,24 @@ codex-console.exe --access-password mypassword
 
 ## Docker 部署
 
+### 首次部署（最小步骤）
+
+```bash
+git clone https://github.com/<yourname>/codex-console.git
+cd codex-console
+cp .env.example .env
+# 编辑 .env，至少设置 WEBUI_ACCESS_PASSWORD
+
+docker compose up -d --build
+```
+
+启动后访问：
+
+- `http://127.0.0.1:1455`
+- 或 `http://服务器IP:1455`
+
+默认容器名：`codex-console`
+
 ### 使用 docker compose
 
 先准备 `.env`：
@@ -152,6 +170,15 @@ docker compose up -d
 
 ```bash
 docker compose logs -f
+```
+
+常用命令：
+
+```bash
+docker compose ps
+docker compose restart
+docker compose down
+docker logs -f codex-console
 ```
 
 说明：
