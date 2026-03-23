@@ -51,6 +51,7 @@ class CpaServiceTestRequest(BaseModel):
 
 
 def _to_response(svc) -> CpaServiceResponse:
+    # 安全起见，仅返回 has_token 标记，不向前端回传明文 token。
     return CpaServiceResponse(
         id=svc.id,
         name=svc.name,
@@ -97,22 +98,6 @@ async def get_cpa_service(service_id: int):
             raise HTTPException(status_code=404, detail="CPA 服务不存在")
         return _to_response(service)
 
-
-@router.get("/{service_id}/full")
-async def get_cpa_service_full(service_id: int):
-    """获取 CPA 服务完整配置（含 token）"""
-    with get_db() as db:
-        service = crud.get_cpa_service_by_id(db, service_id)
-        if not service:
-            raise HTTPException(status_code=404, detail="CPA 服务不存在")
-        return {
-            "id": service.id,
-            "name": service.name,
-            "api_url": service.api_url,
-            "api_token": service.api_token,
-            "enabled": service.enabled,
-            "priority": service.priority,
-        }
 
 
 @router.patch("/{service_id}", response_model=CpaServiceResponse)
