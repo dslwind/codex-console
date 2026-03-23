@@ -204,6 +204,7 @@ docker compose restart
 - 访问密码请在 `.env` 中通过 `WEBUI_ACCESS_PASSWORD` 设置
 - 数据和日志会分别持久化到宿主机的 `./data`、`./logs`
 - Docker 镜像构建已排除 `.git`、`.env`、`data/`、`logs/`、测试文件等无关内容，镜像会更干净一些
+- 容器内可通过 `host.docker.internal` 访问宿主机服务（映射到 Docker host gateway）
 
 ### 使用 docker run
 
