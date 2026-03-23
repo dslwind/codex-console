@@ -1,14 +1,16 @@
 services:
   webui:
     build: .
+    env_file:
+      - .env
     ports:
       - "1455:1455"
     environment:
-      WEBUI_HOST: 0.0.0.0
-      WEBUI_PORT: "1455"
-      WEBUI_ACCESS_PASSWORD: "yPazIWDpphsqimsCv3aM"
-      DEBUG: "0"
-      LOG_LEVEL: info
+      WEBUI_HOST: ${WEBUI_HOST:-0.0.0.0}
+      WEBUI_PORT: ${WEBUI_PORT:-1455}
+      WEBUI_ACCESS_PASSWORD: ${WEBUI_ACCESS_PASSWORD:?set WEBUI_ACCESS_PASSWORD in .env}
+      DEBUG: ${DEBUG:-0}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs

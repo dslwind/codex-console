@@ -67,24 +67,34 @@ pip install -r requirements.txt
 
 ## 环境变量配置
 
-可选。复制 `.env.example` 为 `.env` 后按需修改:
+建议先复制 `.env.example` 为 `.env`，再按需修改：
 
 ```bash
 cp .env.example .env
 ```
 
-常用变量如下:
+Docker Compose 默认会自动读取 `.env`。
+
+常用变量如下：
 
 | 变量 | 说明 | 默认值 |
 | --- | --- | --- |
-| `APP_HOST` | 监听主机 | `0.0.0.0` |
-| `APP_PORT` | 监听端口 | `8000` |
-| `APP_ACCESS_PASSWORD` | Web UI 访问密钥 | `admin123` |
+| `WEBUI_HOST` | Web UI 监听主机 | `0.0.0.0` |
+| `WEBUI_PORT` | Web UI 监听端口 | `1455` |
+| `WEBUI_ACCESS_PASSWORD` | Web UI 访问密码 | **必填，建议自定义强密码** |
+| `DEBUG` | 是否开启调试 | `0` |
+| `LOG_LEVEL` | 日志级别 | `info` |
 | `APP_DATABASE_URL` | 数据库连接字符串 | `data/database.db` |
 
-优先级:
+优先级：
 
 `命令行参数 > 环境变量(.env) > 数据库设置 > 默认值`
+
+说明：
+
+- Web UI 启动脚本主要读取 `WEBUI_*` 变量
+- 项目其他部分仍兼容部分 `APP_*` 变量
+- Docker 部署时，推荐优先使用 `WEBUI_*` 这组变量，避免混用时把自己绕进去
 
 ## 启动 Web UI
 
@@ -123,13 +133,32 @@ codex-console.exe --access-password mypassword
 
 ## Docker 部署
 
-### 使用 docker-compose
+### 使用 docker compose
+
+先准备 `.env`：
 
 ```bash
-docker-compose up -d
+cp .env.example .env
+# 然后编辑 .env，至少设置 WEBUI_ACCESS_PASSWORD
 ```
 
-你可以在 `docker-compose.yml` 中修改环境变量，比如端口和访问密码。
+启动：
+
+```bash
+docker compose up -d
+```
+
+查看日志：
+
+```bash
+docker compose logs -f
+```
+
+说明：
+
+- `docker-compose.yml` 不再内置明文密码
+- 访问密码请在 `.env` 中通过 `WEBUI_ACCESS_PASSWORD` 设置
+- 数据和日志会分别持久化到宿主机的 `./data`、`./logs`
 
 ### 使用 docker run
 
@@ -139,22 +168,26 @@ docker run -d \
   -e WEBUI_HOST=0.0.0.0 \
   -e WEBUI_PORT=1455 \
   -e WEBUI_ACCESS_PASSWORD=your_secure_password \
+  -e DEBUG=0 \
+  -e LOG_LEVEL=info \
   -v $(pwd)/data:/app/data \
+  -v $(pwd)/logs:/app/logs \
   --name codex-console \
   ghcr.io/<yourname>/codex-console:latest
 ```
 
-说明:
+说明：
 
 - `WEBUI_HOST`: 监听主机，默认 `0.0.0.0`
 - `WEBUI_PORT`: 监听端口，默认 `1455`
-- `WEBUI_ACCESS_PASSWORD`: Web UI 访问密码
+- `WEBUI_ACCESS_PASSWORD`: Web UI 访问密码，建议设置强密码
 - `DEBUG`: 设为 `1` 或 `true` 可开启调试模式
 - `LOG_LEVEL`: 日志级别，例如 `info`、`debug`
 
-注意:
+注意：
 
-`-v $(pwd)/data:/app/data` 很重要，这会把数据库和账号数据持久化到宿主机。否则容器一重启，数据也可能跟着表演消失术。
+- `-v $(pwd)/data:/app/data` 很重要，这会把数据库和账号数据持久化到宿主机
+- `-v $(pwd)/logs:/app/logs` 可以保留应用日志，排错时更省心
 
 ## 使用远程 PostgreSQL
 
