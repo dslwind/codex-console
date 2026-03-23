@@ -131,6 +131,8 @@ codex-console.exe --access-password mypassword
 
 [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+如果你使用 Docker 部署，默认访问地址是 `http://127.0.0.1:1455`。
+
 ## Docker 部署
 
 ### 首次部署（最小步骤）
@@ -179,6 +181,21 @@ docker compose ps
 docker compose restart
 docker compose down
 docker logs -f codex-console
+```
+
+更新项目：
+
+```bash
+git pull
+# 如果 .env.example 有变化，手动比对是否要同步到你自己的 .env
+
+docker compose up -d --build
+```
+
+如果只是重启服务而不重建镜像：
+
+```bash
+docker compose restart
 ```
 
 说明：
